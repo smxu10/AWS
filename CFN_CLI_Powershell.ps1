@@ -2,7 +2,7 @@
 aws cloudformation delete-stack --stack-name check-output 
 
 aws cloudformation create-stack --stack-name check-output `
---template-body file://C://Minzhe/AWS/Udemy_Courses/AWS_CloudFormation_Introduction/code/6-outputs/0-create-ssh-security-group.yaml
+--template-body file://C://......../AWS_CloudFormation_Introduction/code/6-outputs/0-create-ssh-security-group.yaml
 
 aws cloudformation describe-stacks --stack-name check-output
 
