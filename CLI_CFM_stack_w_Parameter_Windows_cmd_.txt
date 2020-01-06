@@ -1,0 +1,47 @@
+
+aws cloudformation create-stack --stack-name test ^
+--template-body file://C://Minzhe/AWS/EC2_Keys/Lambda_CFM/lambda_simple_2.yaml ^
+--parameters ParameterKey=Env1,ParameterValue=PROD
+
+aws cloudformation create-stack --stack-name t ^
+--template-body file://C://Minzhe/AWS/EC2_Keys/Lambda_CFM/lambda_simple_1_A.yaml ^
+--parameters ParameterKey=Env1,ParameterValue=STG
+
+aws cloudformation create-stack --stack-name t ^
+--template-body file://C://Minzhe/AWS/EC2_Keys/Lambda_CFM/example.yaml ^
+--parameters ParameterKey=EnvName,ParameterValue=STG ^
+ParameterKey=LambdaHandlerPath,ParameterValue=SD ^
+--capabilities CAPABILITY_NAMED_IAM
+
+
+aws cloudformation create-stack ^
+--stack-name example ^
+--template-body file://C://minzhe/aws/clf/templates/single-instance.yml ^
+--parameters file://C://minzhe/aws/clf/parameters/single-instance.json
+
+aws cloudformation create-stack --template-body file://C://minzhe/aws/clf/templates/instance-and-route53.yml ^
+--stack-name route53 ^
+--parameters file://C://minzhe/aws/clf/parameters/instance-and-route53.json
+
+aws cloudformation create-change-set ^
+--stack-name example ^
+--template-body file://C://minzhe/aws/clf/templates/instance-and-route53.yml ^
+--parameters file://C://minzhe/aws/clf/parameters/instance-and-route53.json ^ 	
+--change-set-name changeset-1
+
+aws cloudformation describe-change-set --stack-name example --change-set-name changeset-1 | jq '.Changes[]'
+aws cloudformation execute-change-set --stack-name example --change-set-name changeset-1
+
+aws cloudformation create-change-set ^
+--stack-name example ^
+--template-body file://C://minzhe/aws/clf/templates/single-instance.yml ^
+--parameters file://C://minzhe/aws/clf/parameters/single-instance.json ^
+--change-set-name changeset-2
+
+aws cloudformation describe-change-set --stack-name example --change-set-name changeset-2 | jq '.Changes[]'
+aws cloudformation execute-change-set --stack-name example --change-set-name changeset-2
+
+aws cloudformation delete-stack --stack-name example
+
+curl -o setup-topic-queue.json "https://s3.amazonaws.com//cloudformation-templates-us-east-1/SNSToSQS.template"
+ruby -ryaml -rjson -e 'puts YAML.dump(JSON.load(ARGF))' < setup-topic-queue.json > setup-topic-queue.yml
